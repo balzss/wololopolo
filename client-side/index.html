@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
+    <style>
+body {
+    background-color: #ccc;
+    margin: 0;
+}
+
+.container {
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+input {
+    margin: 24px;
+}
+    </style>
 </head>
 <body>
-    <canvas width="600" height="600"></canvas>
+    <div class="container">
+        <input type="text" name="text" id="text" value="text" />
+        <canvas width="600" height="600"></canvas>
+    </div>
     <img src="static/img/t1.jpg" alt="" style="display: none">
     <script src="main.js" charset="utf-8"></script>
 </body>
