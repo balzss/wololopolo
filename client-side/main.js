@@ -1,13 +1,21 @@
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
+const canvasWidth = canvas.width;
 
-drawPolo(canvas.width, context);
+context.globalCompositeOperation = 'multiply';
 
-function drawPolo(canvasWidth, ctx) {
-    context.globalCompositeOperation = 'multiply';
+document.querySelector('input').addEventListener('keydown', drawPolo);
+
+// drawPolo(canvas.width, context);
+
+function drawPolo() {
+    console.log(this.value);
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(document.querySelector('img'), 0, 0, 600, 600);
 
-    const longText = 'ugytunik hogy csak a kirajzolas koordinataival volt valami baj'.split(' ');
+    // const longText = 'ugytunik hogy csak a kirajzolas koordinataival volt valami baj'.split(' ');
+    const longText = this.value.split(' ');
     const targetWidth = 160;
     const linePadding = 4;
     const targetChars = 12;
@@ -37,13 +45,13 @@ function drawPolo(canvasWidth, ctx) {
         }
 
         while (true) {
-            ctx.font = fontSize + 'px/' + lineHeight + 'em sans-serif';
-            ctx.fillStyle = 'rgb(255,0,255)';
-            const textWidth = ctx.measureText(textBuffer).width;
+            context.font = fontSize + 'px/' + lineHeight + 'em sans-serif';
+            context.fillStyle = 'rgb(255,0,255)';
+            const textWidth = context.measureText(textBuffer).width;
 
             console.log(textBuffer);
             if (textWidth <= targetWidth) {
-                ctx.fillText(textBuffer, canvasWidth / 2 - textWidth / 2, yOffset);
+                context.fillText(textBuffer, canvasWidth / 2 - textWidth / 2, yOffset);
                 yOffset += fontSize * lineHeight;
                 break;
             } else {
