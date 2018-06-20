@@ -8,16 +8,20 @@
 </head>
 <body>
     <div class="container">
-        <input type="text" name="text" id="polo-text" value="" autofocus placeholder="Text on shirt..."/>
-        <div class="options">
-            <select id="font-select" onchange="fontChange(value)"></select>
-            <div id="color-container">
+        <input class="panel padded" type="text" name="text" id="polo-text" value="" autofocus placeholder="Text on shirt..."/>
+        <div class="options panel-row">
+            <select id="font-select" onchange="fontChange(value)" class="panel padded"></select>
+            <div class="panel" id="color-container">
                 <div id="color-pound">#</div>
                 <input type="text" name="color" id="color-input" value="5C6BC0" placeholder="HEX color..."/>
                 <div id="color-preview"></div>
             </div>
         </div>
-        <canvas width="900" height="900"></canvas>
+        <canvas width="900" height="900" class="panel"></canvas>
+        <div class="save-options panel-row">
+            <button onclick="download()" class="panel">Download</button>
+            <button onclick="openInTab()" class="panel">Open</button>
+        </div>
     </div>
     <img src="static/img/t1.jpg" alt="" style="position: absolute; top: 0: left: 0; display: none">
     <script src="static/main.js" charset="utf-8"></script>

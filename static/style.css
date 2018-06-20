@@ -1,52 +1,50 @@
 body {
     background-color: #ccc;
+    margin: 0 12px;
 }
 
 .container {
-    max-width: 500px;
+    max-width: 480px;
     display: flex;
     flex-direction: column;
     margin: auto;
 }
 
 canvas {
-    margin: 6px 0;
     width: 100%;
     height: auto;
-    border-radius: 6px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
-#polo-text {
-    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-    margin: 6px 0;
-    padding: 12px;
-    font-size: 18px;
-    border-radius: 6px;
+.panel {
+    margin: 12px 0;
     border: none;
     outline: none;
+    font-size: 18px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    border-radius: 6px;
 }
 
-.options {
+.panel-row {
     display: flex;
     width: 100%;
     justify-content: space-between;
-    margin: 6px 0;
+    height: 44px;
+    align-items: center;
 }
 
-.options > #font-select {
-    padding: 12px;
+.panel-row > * {
+    height: 100%;
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-right: 12px;
 }
 
-.options > #font-select, .options > #color-container {
-    box-sizing: border-box;
-    width: calc(50% - 4px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-    font-size: 18px;
-    border-radius: 6px;
-    border: none;
-    outline: none;
-    height: 48px;
+.panel-row > *:last-child {
+    margin-right: 0;
+}
+
+.padded {
+    padding: 10px;
 }
 
 #color-container {
@@ -55,7 +53,6 @@ canvas {
     align-items: center;
     background-color: white;
 }
-
 
 #color-container > #color-pound {
     color: #222;
@@ -70,12 +67,10 @@ canvas {
 }
 
 #color-container > #color-input {
+    border: none;
     box-sizing: border-box;
     height: 100%;
     width: 60%;
-    font-size: 18px;
-    border: none;
-    outline: none;
     padding: 8px;
 }
 

@@ -104,3 +104,15 @@ function drawPolo() {
         }
     }
 }
+
+function download() {
+    const link = document.createElement('a');
+    link.download = `wololo-${Date.now()}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+function openInTab() {
+    const w = window.open();
+    w.document.write(`<img src="${canvas.toDataURL()}"/>`);
+}
