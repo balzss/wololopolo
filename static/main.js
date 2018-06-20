@@ -45,13 +45,13 @@ function loadFonts() {
     }
 }
 
-ColorPicker(
-  document.getElementById('slide'),
-  document.getElementById('picker'),
-  function(hex, hsv, rgb) {
-    colorInput.value = hex.slice(1);
-    setColor();
-  });
+// ColorPicker(
+//     document.getElementById('slide'),
+//     document.getElementById('picker'),
+//     function(hex, hsv, rgb) {
+//         colorInput.value = hex.slice(1);
+//         setColor();
+//     });
 
 function setColor() {
     selectedColor = '#' + colorInput.value;
