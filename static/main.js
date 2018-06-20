@@ -1,6 +1,12 @@
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 const canvasWidth = canvas.width;
+const img = new Image();
+img.src = 'static/img/t2.jpg';
+
+img.onload = () => {
+    drawPolo();
+};
 
 const fontList = Object.freeze([
     'Bungee',
@@ -62,7 +68,7 @@ function setColor() {
 loadFonts();
 setColor();
 
-context.globalCompositeOperation = 'multiply';
+context.globalCompositeOperation = 'difference';
 
 poloText.addEventListener('keyup', drawPolo);
 colorInput.addEventListener('keyup', setColor);
@@ -71,7 +77,9 @@ drawPolo();
 
 function drawPolo() {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(document.querySelector('img'), 0, 0, canvas.width, canvas.height);
+    context.globalAlpha = 1;
+    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+    context.globalAlpha = 0.8;
 
     const longText = poloText.value.split(' ') || ''.split(' ');
     const targetWidth = canvas.width / 4;
@@ -83,7 +91,6 @@ function drawPolo() {
     const targetChars = 5;
 
     while (true) {
-        console.log(targetChars);
         let wordCount = 1;
         let fontSize = 80;
 
