@@ -4,24 +4,21 @@ const canvasWidth = canvas.width;
 
 context.globalCompositeOperation = 'multiply';
 
-document.querySelector('input').addEventListener('keydown', drawPolo);
+document.querySelector('input').addEventListener('keyup', drawPolo);
 
-// drawPolo(canvas.width, context);
+drawPolo();
 
 function drawPolo() {
-    console.log(this.value);
-
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(document.querySelector('img'), 0, 0, 600, 600);
+    context.drawImage(document.querySelector('img'), 0, 0, canvas.width, canvas.height);
 
     // const longText = 'ugytunik hogy csak a kirajzolas koordinataival volt valami baj'.split(' ');
-    const longText = this.value.split(' ');
-    const targetWidth = 160;
-    const linePadding = 4;
-    const targetChars = 12;
-    const lineHeight = 1.2;
+    const longText = this.value ? this.value.split(' ') : 'hello bello'.split(' ');
+    const targetWidth = canvas.width / 4;
+    const linePadding = 8;
+    const targetChars = 8;
 
-    let yOffset = 160;
+    let yOffset = canvas.width / 4;
     let cursor = 0;
     let wordCount = 1;
     let fontSize = 60;
@@ -35,7 +32,6 @@ function drawPolo() {
 
         while (true) {
             textBuffer = longText.slice(cursor, cursor + wordCount).join(' ');
-            console.log(longText.slice(cursor, cursor + wordCount));
             if (textBuffer.length >= targetChars || (cursor + wordCount) > longText.length) {
                 cursor += wordCount;
                 break;
@@ -45,14 +41,13 @@ function drawPolo() {
         }
 
         while (true) {
-            context.font = fontSize + 'px/' + lineHeight + 'em sans-serif';
+            context.font = fontSize + 'px Bungee Inline';
             context.fillStyle = 'rgb(255,0,255)';
             const textWidth = context.measureText(textBuffer).width;
 
-            console.log(textBuffer);
             if (textWidth <= targetWidth) {
+                yOffset += fontSize + linePadding;
                 context.fillText(textBuffer, canvasWidth / 2 - textWidth / 2, yOffset);
-                yOffset += fontSize * lineHeight;
                 break;
             } else {
                 fontSize--;
