@@ -122,3 +122,13 @@ canvas {
     box-sizing: border-box;
     text-align: center;
 }
+
+#picker {
+    width: 200px;
+    height: 200p;
+}
+
+#slide {
+    width: 30px;
+    height: 200px
+}
