@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="static/style.css" type="text/css" media="all" />
 </head>
 <body>
+    <img src="static/img/t1.jpg" alt="" style="position: absolute; top: 0: left: 0; display: none">
+
     <div class="container">
         <input class="panel padded" type="text" name="text" id="polo-text" value="" autofocus placeholder="Text on shirt..."/>
         <div class="options panel-row">
@@ -21,10 +23,18 @@
         <canvas width="900" height="900" class="panel"></canvas>
         <div class="save-options panel-row">
             <button onclick="download()" class="panel">Download</button>
-            <button onclick="openInTab()" class="panel">Open/Share</button>
+            <button onclick="openShare()" class="panel">Open/Share</button>
         </div>
     </div>
-    <img src="static/img/t1.jpg" alt="" style="position: absolute; top: 0: left: 0; display: none">
+
+    <div class="outer-share">
+        <div class="inner-share">
+            <p>To share the image below long press on it and choose "share" from the context menu.</p>
+            <img src="" alt="">
+            <div class="close-btn" onclick="closeShare()">Close this dialog</div>
+        </div>
+    </div>
+
     <script src="static/main.js" charset="utf-8"></script>
 </body>
 </html>

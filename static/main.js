@@ -17,6 +17,8 @@ const select = document.querySelector('#font-select');
 const poloText = document.querySelector('#polo-text');
 const colorInput = document.querySelector('#color-input');
 const colorPreview = document.querySelector('#color-preview');
+const outerShare = document.querySelector('.outer-share');
+const overImage = document.querySelector('.inner-share > img');
 
 let selectedFont = fontList[0].replace(/\+/g, ' ');
 
@@ -112,7 +114,11 @@ function download() {
     link.click();
 }
 
-function openInTab() {
-    const w = window.open();
-    w.document.write(`<img src="${canvas.toDataURL()}"/>`);
+function openShare() {
+    outerShare.style.display = 'block';
+    overImage.src = canvas.toDataURL();
+}
+
+function closeShare() {
+    outerShare.style.display = 'none';
 }
