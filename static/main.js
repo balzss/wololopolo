@@ -12,8 +12,10 @@ const fontList = Object.freeze([
     'Bungee',
     'Pacifico',
     'Bangers',
+    'Faster+One',
     'Passion+One',
     'Nosifer',
+    'Monofett',
     'Shrikhand',
     'Sigmar+One',
     'Titan+One'
