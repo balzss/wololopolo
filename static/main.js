@@ -113,6 +113,13 @@ function download() {
 }
 
 function openInTab() {
-    const w = window.open();
-    w.document.write(`<img src="${canvas.toDataURL()}"/>`);
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            url: canvas.toDataURL()
+        }).then(() => console.log('Successful share')).catch((error) => console.log('Error sharing:', error));
+    } else {
+        const w = window.open();
+        w.document.write(`<img src="${canvas.toDataURL()}"/>`);
+    }
 }
