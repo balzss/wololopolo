@@ -2,9 +2,60 @@ const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 const canvasWidth = canvas.width;
 
+const fontList = Object.freeze([
+    'Bungee',
+    'Pacifico',
+    'Bangers',
+    'Passion+One',
+    'Nosifer',
+    'Shrikhand',
+    'Sigmar+One',
+    'Titan+One'
+]);
+
+const select = document.querySelector('#font-select');
+const poloText = document.querySelector('#polo-text');
+const colorInput = document.querySelector('#color-input');
+const colorPreview = document.querySelector('#color-preview');
+
+let selectedFont = fontList[0].replace(/\+/g, ' ');
+
+function fontChange(selected) {
+    select.style.fontFamily = selected;
+    selectedFont = selected;
+    drawPolo();
+}
+
+function loadFonts() {
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('type', 'text/css');
+    link.setAttribute('href', `https://fonts.googleapis.com/css?family=${fontList.join('|')}&subset=latin-ext`);
+    document.head.appendChild(link);
+
+    select.style.fontFamily = selectedFont;
+    for (const font of fontList) {
+        const option = document.createElement('option');
+        const fontName = font.replace(/\+/g, ' ');
+        option.style.fontFamily = fontName;
+        option.innerText = fontName;
+        select.appendChild(option);
+    }
+}
+
+function setColor() {
+    selectedColor = '#' + colorInput.value;
+    colorPreview.style.backgroundColor = selectedColor;
+    drawPolo();
+}
+
+loadFonts();
+setColor();
+
 context.globalCompositeOperation = 'multiply';
 
-document.querySelector('input').addEventListener('keyup', drawPolo);
+poloText.addEventListener('keyup', drawPolo);
+colorInput.addEventListener('keyup', setColor);
 
 drawPolo();
 
@@ -12,21 +63,19 @@ function drawPolo() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(document.querySelector('img'), 0, 0, canvas.width, canvas.height);
 
-    // const longText = 'ugytunik hogy csak a kirajzolas koordinataival volt valami baj'.split(' ');
-    const longText = this.value ? this.value.split(' ') : 'hello bello'.split(' ');
+    const longText = poloText.value.split(' ') || ''.split(' ');
     const targetWidth = canvas.width / 4;
     const linePadding = 8;
-    const targetChars = 8;
 
-    let yOffset = canvas.width / 4;
+    let yOffset = canvas.width / 3.5 - longText.length * 6;
     let cursor = 0;
-    let wordCount = 1;
-    let fontSize = 60;
     let textBuffer = '';
+    const targetChars = 5;
 
     while (true) {
-        wordCount = 1;
-        fontSize = 40;
+        console.log(targetChars);
+        let wordCount = 1;
+        let fontSize = 80;
 
         if (cursor >= longText.length) break;
 
@@ -41,8 +90,8 @@ function drawPolo() {
         }
 
         while (true) {
-            context.font = fontSize + 'px Bungee Inline';
-            context.fillStyle = 'rgb(255,0,255)';
+            context.font = `${fontSize}px ${selectedFont}`;
+            context.fillStyle = selectedColor;
             const textWidth = context.measureText(textBuffer).width;
 
             if (textWidth <= targetWidth) {

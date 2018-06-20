@@ -1,0 +1,87 @@
+body {
+    background-color: #ccc;
+}
+
+.container {
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+canvas {
+    margin: 6px 0;
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+#polo-text {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    margin: 6px 0;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+}
+
+.options {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin: 6px 0;
+}
+
+.options > #font-select {
+    padding: 12px;
+}
+
+.options > #font-select, .options > #color-container {
+    box-sizing: border-box;
+    width: calc(50% - 4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    font-size: 18px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    height: 48px;
+}
+
+#color-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    background-color: white;
+}
+
+
+#color-container > #color-pound {
+    color: #222;
+    font-size: 28px;
+    font-weight: bolder;
+    padding: 0 8px;
+    background-color: white;
+    box-sizing: border-box;
+    border-right: 1px solid #ccc;
+    border-top-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+}
+
+#color-container > #color-input {
+    box-sizing: border-box;
+    height: 100%;
+    width: 60%;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    padding: 8px;
+}
+
+#color-preview {
+    height: 100%;
+    flex: 1 0;
+    border-top-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+}
