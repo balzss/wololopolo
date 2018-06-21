@@ -28,9 +28,15 @@ const colorPreview = document.querySelector('#color-preview');
 const outerShare = document.querySelector('.outer-share');
 const overImage = document.querySelector('.inner-share > img');
 
-let selectedFont = fontList[0].replace(/\+/g, ' ');
+let params = (new URL(document.location)).searchParams;
+let selectedColor;
+
+poloText.value = params.get('txt') || 'hello';
+let selectedFont = (params.get('font') || fontList[0]).replace(/\+/g, ' ');
+colorInput.value = params.get('color') || 'fff';
 
 function fontChange(selected) {
+    select.value = selected;
     select.style.fontFamily = selected;
     selectedFont = selected;
     drawPolo();
@@ -43,7 +49,6 @@ function loadFonts() {
     link.setAttribute('href', `https://fonts.googleapis.com/css?family=${fontList.join('|')}&subset=latin-ext`);
     document.head.appendChild(link);
 
-    select.style.fontFamily = selectedFont;
     for (const font of fontList) {
         const option = document.createElement('option');
         const fontName = font.replace(/\+/g, ' ');
@@ -51,6 +56,8 @@ function loadFonts() {
         option.innerText = fontName;
         select.appendChild(option);
     }
+    fontChange(selectedFont);
+    drawPolo();
 }
 
 // ColorPicker(
@@ -78,6 +85,8 @@ colorInput.addEventListener('keyup', setColor);
 drawPolo();
 
 function drawPolo() {
+    history.replaceState('state', 'Index', `?txt=${poloText.value}&color=${colorInput.value}&font=${selectedFont}`);
+
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.globalAlpha = 1;
     context.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -87,7 +96,7 @@ function drawPolo() {
     const targetWidth = canvas.width / 4;
     const linePadding = 8;
 
-    let yOffset = canvas.width / 3.5 - longText.length * 6;
+    let yOffset = canvas.width / 3.5 - (longText.join(' ').length / 2);
     let cursor = 0;
     let textBuffer = '';
     const targetChars = 5;

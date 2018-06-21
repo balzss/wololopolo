@@ -62,7 +62,6 @@ canvas {
     padding: 0 6px;
     background-color: white;
     box-sizing: border-box;
-    border-right: 1px solid #ccc;
     border-top-left-radius: inherit;
     border-bottom-left-radius: inherit;
 }
@@ -73,6 +72,9 @@ canvas {
     height: 100%;
     width: 55%;
     padding: 6px;
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    outline: none;
 }
 
 #color-preview {
