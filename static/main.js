@@ -31,9 +31,9 @@ const overImage = document.querySelector('.inner-share > img');
 let params = (new URL(document.location)).searchParams;
 let selectedColor;
 
-poloText.value = params.get('txt') || 'hello';
+poloText.value = params.get('txt') || 'Hello';
 let selectedFont = (params.get('font') || fontList[0]).replace(/\+/g, ' ');
-colorInput.value = params.get('color') || 'fff';
+colorInput.value = params.get('color') || 'BBDEFB';
 
 function fontChange(selected) {
     select.value = selected;
