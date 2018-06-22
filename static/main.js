@@ -1,12 +1,29 @@
+let touchStart = 0;
+let touchProgress = 0;
+let touchInProgress = false;
+let changeableTarget = true;
+
+let scroll = false;
+
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
-const canvasWidth = canvas.width;
-const img = new Image();
-img.src = 'static/img/t2.jpg';
 
-img.onload = () => {
-    drawPolo();
+const imgPaths = ['t1.jpg', 't2.jpg', 't1.jpg', 't2.jpg', 't1.jpg'];
+const imgs = imgPaths.map(i => {
+    let newImg = new Image();
+    newImg.src = 'static/img/' + i;
+    return newImg;
+});
+
+imgs[0].onload = () => {
+    selectedColor = '#' + colorInput.value;
+    colorPreview.style.backgroundColor = selectedColor;
+    requestAnimationFrame(() => drawPolo(true));
 };
+
+let canvasOffset = (imgs.length - 1) * canvas.width;
+let scrollTarget = imgs.length - 1;
+console.log(canvasOffset);
 
 const fontList = Object.freeze([
     'Bungee',
@@ -29,17 +46,15 @@ const outerShare = document.querySelector('.outer-share');
 const overImage = document.querySelector('.inner-share > img');
 
 let params = (new URL(document.location)).searchParams;
-let selectedColor;
+let selectedColor, selectedFont;
 
-poloText.value = params.get('txt') || 'Hello';
-let selectedFont = (params.get('font') || fontList[0]).replace(/\+/g, ' ');
-colorInput.value = params.get('color') || 'BBDEFB';
+initSetup();
 
 function fontChange(selected) {
     select.value = selected;
     select.style.fontFamily = selected;
     selectedFont = selected;
-    drawPolo();
+    requestAnimationFrame(() => drawPolo(true));
 }
 
 function loadFonts() {
@@ -56,41 +71,78 @@ function loadFonts() {
         option.innerText = fontName;
         select.appendChild(option);
     }
-    fontChange(selectedFont);
-    drawPolo();
+    select.value = selectedFont;
+    select.style.fontFamily = selectedFont;
 }
-
-// ColorPicker(
-//     document.getElementById('slide'),
-//     document.getElementById('picker'),
-//     function(hex, hsv, rgb) {
-//         colorInput.value = hex.slice(1);
-//         setColor();
-//     });
 
 function setColor() {
     selectedColor = '#' + colorInput.value;
     colorPreview.style.backgroundColor = selectedColor;
-    drawPolo();
+    requestAnimationFrame(drawPolo);
 }
 
-loadFonts();
-setColor();
+function initSetup() {
+    poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
+    selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
+    colorInput.value = decodeURIComponent(params.get('color') || '') || 'BBDEFB';
+
+    loadFonts();
+    selectedColor = '#' + colorInput.value;
+    colorPreview.style.backgroundColor = selectedColor;
+}
 
 context.globalCompositeOperation = 'difference';
+context.textAlign = 'center';
 
-poloText.addEventListener('keyup', drawPolo);
+poloText.addEventListener('keyup', () => {
+    requestAnimationFrame(() => drawPolo(true));
+});
 colorInput.addEventListener('keyup', setColor);
 
-drawPolo();
+function updateUri() {
+    history.replaceState('state', 'Index',
+        `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(colorInput.value)}&font=${encodeURIComponent(selectedFont)}`);
+}
 
-function drawPolo() {
-    history.replaceState('state', 'Index', `?txt=${poloText.value}&color=${colorInput.value}&font=${selectedFont}`);
-
+function drawPolo(textChanged = false) {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.globalAlpha = 1;
-    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    if (scroll) {
+        const dx = scrollTarget * canvas.width - canvasOffset;
+        canvasOffset += dx * 0.1;
+        if (Math.abs(canvasOffset % canvas.width) <= 5 || Math.abs(canvasOffset % canvas.width) >= canvas.width - 5) {
+            canvasOffset = scrollTarget * canvas.width;
+            scroll = false;
+        }
+
+        for (i in imgs) {
+            context.drawImage(imgs[i], canvasOffset - i * canvas.width, 0, canvas.width, canvas.height);
+        }
+        window.requestAnimationFrame(drawPolo);
+        return;
+    }
+
+    for (i in imgs) {
+        context.drawImage(imgs[i], canvasOffset - i * canvas.width, 0, canvas.width, canvas.height);
+    }
+
+    if (touchInProgress) return;
+
     context.globalAlpha = 0.8;
+
+    if (textChanged) cachedText = calculateText();
+
+    const xOffset = canvas.width / 2;
+    context.fillStyle = selectedColor;
+    for (const line of cachedText) {
+        context.font = line.font;
+        context.fillText(line.text, xOffset, line.yOffs);
+    }
+}
+
+function calculateText() {
+    let returnText = [];
 
     const longText = poloText.value.split(' ') || ''.split(' ');
     const targetWidth = canvas.width / 4;
@@ -103,7 +155,7 @@ function drawPolo() {
 
     while (true) {
         let wordCount = 1;
-        let fontSize = 80;
+        let fontSize = 100;
 
         if (cursor >= longText.length) break;
 
@@ -119,18 +171,20 @@ function drawPolo() {
 
         while (true) {
             context.font = `${fontSize}px ${selectedFont}`;
-            context.fillStyle = selectedColor;
+            // context.fillStyle = selectedColor;
             const textWidth = context.measureText(textBuffer).width;
 
             if (textWidth <= targetWidth) {
                 yOffset += fontSize + linePadding;
-                context.fillText(textBuffer, canvasWidth / 2 - textWidth / 2, yOffset);
+                returnText.push({text: textBuffer, yOffs: yOffset, font: `${fontSize}px ${selectedFont}`});
                 break;
             } else {
                 fontSize--;
             }
         }
     }
+
+    return returnText;
 }
 
 function download() {
@@ -148,3 +202,30 @@ function openShare() {
 function closeShare() {
     outerShare.style.display = 'none';
 }
+
+canvas.addEventListener('touchstart', function(e) {
+    touchStart = e.touches[0].clientX;
+    window.requestAnimationFrame(drawPolo);
+    touchInProgress = true;
+}, false);
+
+canvas.addEventListener('touchmove', function(e) {
+    canvasOffset = scrollTarget * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
+    if (canvasOffset > scrollTarget * canvas.width + canvas.width / 2 && scrollTarget < imgs.length - 1) {
+        changeTarget = 1;
+    } else if (canvasOffset < scrollTarget * canvas.width - canvas.width / 2 && scrollTarget > 0) {
+        changeTarget = -1;
+    } else {
+        changeTarget = 0;
+    }
+    window.requestAnimationFrame(drawPolo);
+}, false);
+
+canvas.addEventListener('touchend', function(e) {
+    touchInProgress = false;
+    if (!scroll) {
+        scrollTarget += changeTarget;
+        scroll = true;
+    }
+    window.requestAnimationFrame(drawPolo);
+}, false);
