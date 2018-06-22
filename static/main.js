@@ -211,9 +211,9 @@ canvas.addEventListener('touchstart', function(e) {
 
 canvas.addEventListener('touchmove', function(e) {
     canvasOffset = scrollTarget * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
-    if (canvasOffset > scrollTarget * canvas.width + canvas.width / 2 && scrollTarget < imgs.length - 1) {
+    if (canvasOffset > scrollTarget * canvas.width + canvas.width / 3 && scrollTarget < imgs.length - 1) {
         changeTarget = 1;
-    } else if (canvasOffset < scrollTarget * canvas.width - canvas.width / 2 && scrollTarget > 0) {
+    } else if (canvasOffset < scrollTarget * canvas.width - canvas.width / 3 && scrollTarget > 0) {
         changeTarget = -1;
     } else {
         changeTarget = 0;
