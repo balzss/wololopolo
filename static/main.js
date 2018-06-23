@@ -1,7 +1,7 @@
 let touchStart = 0;
 let touchProgress = 0;
 let touchInProgress = false;
-let changeableTarget = true;
+let changeTarget = true;
 
 let scroll = false;
 
@@ -50,14 +50,14 @@ let selectedColor, selectedFont;
 
 initSetup();
 
-function fontChange(selected) {
+function fontChange (selected) {
     select.value = selected;
     select.style.fontFamily = selected;
     selectedFont = selected;
     requestAnimationFrame(() => drawPolo(true));
 }
 
-function loadFonts() {
+function loadFonts () {
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
     link.setAttribute('type', 'text/css');
@@ -75,13 +75,13 @@ function loadFonts() {
     select.style.fontFamily = selectedFont;
 }
 
-function setColor() {
+function setColor () {
     selectedColor = '#' + colorInput.value;
     colorPreview.style.backgroundColor = selectedColor;
     requestAnimationFrame(drawPolo);
 }
 
-function initSetup() {
+function initSetup () {
     poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
     selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
     colorInput.value = decodeURIComponent(params.get('color') || '') || 'BBDEFB';
@@ -99,12 +99,13 @@ poloText.addEventListener('keyup', () => {
 });
 colorInput.addEventListener('keyup', setColor);
 
-function updateUri() {
+function updateUri () {
     history.replaceState('state', 'Index',
-        `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(colorInput.value)}&font=${encodeURIComponent(selectedFont)}`);
+        `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(colorInput.value)}` +
+        `&font=${encodeURIComponent(selectedFont)}`);
 }
 
-function drawPolo(textChanged = false) {
+function drawPolo (textChanged = false) {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.globalAlpha = 1;
 
@@ -116,14 +117,14 @@ function drawPolo(textChanged = false) {
             scroll = false;
         }
 
-        for (i in imgs) {
+        for (let i in imgs) {
             context.drawImage(imgs[i], canvasOffset - i * canvas.width, 0, canvas.width, canvas.height);
         }
         window.requestAnimationFrame(drawPolo);
         return;
     }
 
-    for (i in imgs) {
+    for (let i in imgs) {
         context.drawImage(imgs[i], canvasOffset - i * canvas.width, 0, canvas.width, canvas.height);
     }
 
@@ -141,7 +142,7 @@ function drawPolo(textChanged = false) {
     }
 }
 
-function calculateText() {
+function calculateText () {
     let returnText = [];
 
     const longText = poloText.value.split(' ') || ''.split(' ');
@@ -187,29 +188,29 @@ function calculateText() {
     return returnText;
 }
 
-function download() {
+function download () {
     const link = document.createElement('a');
     link.download = `wololo-${Date.now()}.png`;
     link.href = canvas.toDataURL();
     link.click();
 }
 
-function openShare() {
+function openShare () {
     outerShare.style.display = 'block';
     overImage.src = canvas.toDataURL();
 }
 
-function closeShare() {
+function closeShare () {
     outerShare.style.display = 'none';
 }
 
-canvas.addEventListener('touchstart', function(e) {
+canvas.addEventListener('touchstart', function (e) {
     touchStart = e.touches[0].clientX;
     window.requestAnimationFrame(drawPolo);
     touchInProgress = true;
 }, false);
 
-canvas.addEventListener('touchmove', function(e) {
+canvas.addEventListener('touchmove', function (e) {
     canvasOffset = scrollTarget * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
     if (canvasOffset > scrollTarget * canvas.width + canvas.width / 3 && scrollTarget < imgs.length - 1) {
         changeTarget = 1;
@@ -221,7 +222,7 @@ canvas.addEventListener('touchmove', function(e) {
     window.requestAnimationFrame(drawPolo);
 }, false);
 
-canvas.addEventListener('touchend', function(e) {
+canvas.addEventListener('touchend', function (e) {
     touchInProgress = false;
     if (!scroll) {
         scrollTarget += changeTarget;
