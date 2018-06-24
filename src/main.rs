@@ -3,8 +3,6 @@
 
 extern crate rocket;
 
-#[cfg(test)] mod tests;
-
 use std::io;
 use std::path::{Path, PathBuf};
 use rocket::response::Redirect;
