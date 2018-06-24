@@ -13,7 +13,7 @@ const context = canvas.getContext('2d');
 const imgPaths = ['t1.jpg', 't2.jpg', 't1.jpg', 't2.jpg', 't1.jpg'];
 const imgs = imgPaths.map(i => {
     let newImg = new Image();
-    newImg.src = '/static/img/' + i;
+    newImg.src = 'static/img/' + i;
     return newImg;
 });
 
@@ -153,7 +153,7 @@ function drawText (text) {
         }
     }
 
-    updateUri();
+    updateUriFrontendOnly();
 }
 
 function calculateText () {
@@ -186,7 +186,6 @@ function calculateText () {
 
         while (true) {
             context.font = `${fontSize}px ${selectedFont}`;
-            // context.fillStyle = selectedColor;
             const textWidth = context.measureText(textBuffer).width;
 
             if (textWidth <= targetWidth) {
