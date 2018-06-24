@@ -8,6 +8,10 @@ use std::path::{Path, PathBuf};
 use rocket::response::Redirect;
 use rocket::response::NamedFile;
 
+#[cfg(debug_assertions)]
+const DOMAIN : &str = "http://localhost:8000/";
+
+#[cfg(not(debug_assertions))]
 const DOMAIN : &str = "https://wololopolo.com/";
 
 #[get("/", rank = 1)]
