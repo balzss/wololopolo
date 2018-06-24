@@ -13,7 +13,7 @@ const context = canvas.getContext('2d');
 const imgPaths = ['t1.jpg', 't2.jpg', 't1.jpg', 't2.jpg', 't1.jpg'];
 const imgs = imgPaths.map(i => {
     let newImg = new Image();
-    newImg.src = 'static/img/' + i;
+    newImg.src = '/static/img/' + i;
     return newImg;
 });
 
@@ -103,7 +103,7 @@ colorInput.addEventListener('keyup', setColor);
 
 function updateUri () {
     history.replaceState('state', 'Index',
-        `${encodeURIComponent(poloText.value)}/${encodeURIComponent(colorInput.value)}/${encodeURIComponent(selectedFont)}`);
+        `/${encodeURIComponent(poloText.value)}/${encodeURIComponent(colorInput.value)}/${encodeURIComponent(selectedFont)}`);
 }
 
 function updateUriFrontendOnly () {
