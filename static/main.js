@@ -5,6 +5,8 @@ let changeTarget = true;
 
 let scroll = false;
 
+let cachedText;
+
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
@@ -84,14 +86,14 @@ function setColor () {
 function initSetup () {
     poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
     selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
-    colorInput.value = decodeURIComponent(params.get('color') || '') || 'BBDEFB';
+    colorInput.value = decodeURIComponent(params.get('color') || '') || '3F51B5';
 
     loadFonts();
     selectedColor = '#' + colorInput.value;
     colorPreview.style.backgroundColor = selectedColor;
 }
 
-context.globalCompositeOperation = 'difference';
+context.globalCompositeOperation = 'normal';
 context.textAlign = 'center';
 
 poloText.addEventListener('keyup', () => {
@@ -121,24 +123,29 @@ function drawPolo (textChanged = false) {
             context.drawImage(imgs[i], canvasOffset - i * canvas.width, 0, canvas.width, canvas.height);
         }
         window.requestAnimationFrame(drawPolo);
-        return;
+    } else {
+        for (let i in imgs) {
+            context.drawImage(imgs[i], canvasOffset - i * canvas.width, 0, canvas.width, canvas.height);
+        }
     }
-
-    for (let i in imgs) {
-        context.drawImage(imgs[i], canvasOffset - i * canvas.width, 0, canvas.width, canvas.height);
-    }
-
-    if (touchInProgress) return;
-
-    context.globalAlpha = 0.8;
 
     if (textChanged) cachedText = calculateText();
+    drawText(cachedText);
+}
 
-    const xOffset = canvas.width / 2;
+function drawText (text) {
+    context.globalAlpha = 0.8;
+    const xOffset = canvasOffset % canvas.width + canvas.width / 2;
+    const xOffset2 = canvasOffset % canvas.width - canvas.width / 2;
     context.fillStyle = selectedColor;
-    for (const line of cachedText) {
+    for (const line of text) {
         context.font = line.font;
-        context.fillText(line.text, xOffset, line.yOffs);
+        if (canvasOffset < imgs.length * canvas.width && canvasOffset > -canvas.width) {
+            context.fillText(line.text, xOffset, line.yOffs);
+        }
+        if ((scroll || touchInProgress) && canvasOffset < (imgs.length - 1) * canvas.width) {
+            context.fillText(line.text, xOffset2, line.yOffs);
+        }
     }
 }
 
