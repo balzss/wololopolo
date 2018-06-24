@@ -91,7 +91,7 @@ function initSetup () {
     for (const i in imgs) {
         const dot = document.createElement('div');
         dot.classList.add('dot');
-        if (i == imgs.length -1 - scrollTarget) dot.classList.add('active');
+        if (i === imgs.length -1 - scrollTarget) dot.classList.add('active');
         indicatorRow.appendChild(dot);
     }
     loadFonts();
@@ -159,7 +159,11 @@ function drawText (text) {
         }
     }
 
-    updateUriFrontendOnly();
+    if (STATIC_SERVER) {
+        updateUriFrontendOnly();
+    } else {
+        updateUri();
+    }
 }
 
 function calculateText () {
