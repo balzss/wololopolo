@@ -103,6 +103,11 @@ colorInput.addEventListener('keyup', setColor);
 
 function updateUri () {
     history.replaceState('state', 'Index',
+        `${encodeURIComponent(poloText.value)}/${encodeURIComponent(colorInput.value)}/${encodeURIComponent(selectedFont)}`);
+}
+
+function updateUriFrontendOnly () {
+    history.replaceState('state', 'Index',
         `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(colorInput.value)}` +
         `&font=${encodeURIComponent(selectedFont)}`);
 }
@@ -147,6 +152,8 @@ function drawText (text) {
             context.fillText(line.text, xOffset2, line.yOffs);
         }
     }
+
+    updateUri();
 }
 
 function calculateText () {
