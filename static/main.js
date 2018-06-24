@@ -277,5 +277,4 @@ function updateIndicators () {
 function toggle() {
     const b = document.querySelector('.bubble');
     b.style.opacity = b.style.opacity === '0' ? '0.98' : '0';
-    console.log(b);
 }
