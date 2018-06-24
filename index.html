@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wololo Polo</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
     <link rel="stylesheet" href="./static/style.css" type="text/css" media="all" />
     <link rel="icon" type="image/png" href="./static/favicon.png" />
 </head>
@@ -14,11 +14,24 @@
         <input class="panel padded" type="text" name="text" id="polo-text" value="" autofocus placeholder="Text on shirt..."/>
         <div class="options panel-row">
             <select id="font-select" onchange="fontChange(value)" class="panel padded"></select>
-            <div class="panel" id="color-container">
-                <div id="color-pound">#</div>
-                <input type="text" name="color" id="color-input" value="5C6BC0" placeholder="HEX color..."/>
-                <div id="color-preview"></div>
+            <div class="panel color-container" onclick="toggle()">#A77BC2</div>
+        <div class="bubble">
+            <div class="color-grid">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="color-input-wrapper">
+                    <div class="pound">#</div>
+                    <input type="text" value="29B6F6" class="color-input">
+                </div>
             </div>
+        </div>
         </div>
         <div class="canvas-container">
             <canvas width="900" height="900" class="panel"> </canvas>
@@ -27,8 +40,8 @@
             <div class="arrow right"><i class="fas fa-arrow-circle-right"></i></div>
         </div>
         <div class="save-options panel-row">
-            <button onclick="download()" class="panel"><i class="fas fa-download"></i> Download</button>
-            <button onclick="openShare()" class="panel"><i class="fas fa-share-alt"></i> Share</button>
+            <button onclick="download()" class="panel"> Download</button>
+            <button onclick="openShare()" class="panel"> Share</button>
         </div>
     </div>
 

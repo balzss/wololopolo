@@ -18,8 +18,8 @@ const imgs = imgPaths.map(i => {
 });
 
 imgs[0].onload = () => {
-    selectedColor = '#' + colorInput.value;
-    colorPreview.style.backgroundColor = selectedColor;
+    selectedColor = '#' + colorInput.innerText;
+    colorInput.style.backgroundColor = selectedColor;
     requestAnimationFrame(() => drawPolo(true));
 };
 
@@ -41,8 +41,7 @@ const fontList = Object.freeze([
 
 const select = document.querySelector('#font-select');
 const poloText = document.querySelector('#polo-text');
-const colorInput = document.querySelector('#color-input');
-const colorPreview = document.querySelector('#color-preview');
+const colorInput = document.querySelector('.color-container');
 const outerShare = document.querySelector('.outer-share');
 const overImage = document.querySelector('.inner-share > img');
 const indicatorRow = document.querySelector('.indicator-row');
@@ -78,15 +77,15 @@ function loadFonts () {
 }
 
 function setColor () {
-    selectedColor = '#' + colorInput.value;
-    colorPreview.style.backgroundColor = selectedColor;
+    selectedColor = '#' + colorInput.innerText;
+    colorInput.style.backgroundColor = selectedColor;
     requestAnimationFrame(drawPolo);
 }
 
 function initSetup () {
     poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
     selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
-    colorInput.value = decodeURIComponent(params.get('color') || '') || '3F51B5';
+    colorInput.innerText = decodeURIComponent(params.get('color') || '') || '3F51B5';
 
     for (const i in imgs) {
         const dot = document.createElement('div');
@@ -95,8 +94,8 @@ function initSetup () {
         indicatorRow.appendChild(dot);
     }
     loadFonts();
-    selectedColor = '#' + colorInput.value;
-    colorPreview.style.backgroundColor = selectedColor;
+    selectedColor = '#' + colorInput.innerText;
+    colorInput.style.backgroundColor = selectedColor;
 }
 
 context.globalCompositeOperation = 'normal';
@@ -105,7 +104,6 @@ context.textAlign = 'center';
 poloText.addEventListener('keyup', () => {
     requestAnimationFrame(() => drawPolo(true));
 });
-colorInput.addEventListener('keyup', setColor);
 
 function updateUri () {
     history.replaceState('state', 'Index',
@@ -114,7 +112,7 @@ function updateUri () {
 
 function updateUriFrontendOnly () {
     history.replaceState('state', 'Index',
-        `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(colorInput.value)}` +
+        `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(colorInput.innerText)}` +
         `&font=${encodeURIComponent(selectedFont)}`);
 }
 
@@ -215,8 +213,8 @@ function download () {
 }
 
 function openShare () {
-    outerShare.style.display = 'block';
     overImage.src = canvas.toDataURL();
+    outerShare.style.display = 'block';
 }
 
 function closeShare () {
@@ -270,4 +268,10 @@ function updateIndicators () {
     document.querySelectorAll('.dot').forEach(e => e.classList.remove('active'));
     const activeIndicator = imgs.length - 1 - (scrollTarget + changeTarget);
     document.querySelectorAll('.dot')[activeIndicator].classList.add('active');
+}
+
+function toggle() {
+    const b = document.querySelector('.bubble');
+    b.style.opacity = b.style.opacity === '0' ? '0.98' : '0';
+    console.log(b);
 }
