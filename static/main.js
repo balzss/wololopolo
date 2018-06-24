@@ -259,7 +259,7 @@ canvas.addEventListener('touchend', function (e) {
 
 function changeBg (direction) {
     if (scrollTarget + direction < 0 || scrollTarget + direction > imgs.length - 1) return;
-    console.log(scrollTarget + direction);
+    changeTarget = 0;
     scrollTarget += direction;
     updateIndicators();
     scroll = true;
@@ -269,6 +269,5 @@ function changeBg (direction) {
 function updateIndicators () {
     document.querySelectorAll('.dot').forEach(e => e.classList.remove('active'));
     const activeIndicator = imgs.length - 1 - (scrollTarget + changeTarget);
-    console.log(activeIndicator);
     document.querySelectorAll('.dot')[activeIndicator].classList.add('active');
 }
