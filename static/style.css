@@ -103,6 +103,8 @@ canvas {
     align-items: center;
     justify-content: center;
     color: white;
+    user-select: none;
+    cursor: pointer;
 }
 
 .outer-share {
@@ -160,7 +162,7 @@ canvas {
     z-index: 100;
     position: absolute;
     top: 36px;
-    right: 12px;
+    right: 0;
     width: fit-content;
     height: fit-content;
     margin: 24px;
@@ -231,6 +233,11 @@ canvas {
     background-color: #f0f0f0;
     font-family: 'Roboto Slab', serif;
     font-weight: 400;
+}
+
+button{
+    user-select: none;
+    cursor: pointer;
 }
 
 .color-grid > div {

@@ -18,7 +18,7 @@ const imgs = imgPaths.map(i => {
 });
 
 imgs[0].onload = () => {
-    selectedColor = '#' + colorInput.innerText;
+    selectedColor = colorInput.innerText;
     colorInput.style.backgroundColor = selectedColor;
     requestAnimationFrame(() => drawPolo(true));
 };
@@ -77,7 +77,7 @@ function loadFonts () {
 }
 
 function setColor () {
-    selectedColor = '#' + colorInput.innerText;
+    selectedColor = colorInput.innerText;
     colorInput.style.backgroundColor = selectedColor;
     requestAnimationFrame(drawPolo);
 }
@@ -85,7 +85,7 @@ function setColor () {
 function initSetup () {
     poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
     selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
-    colorInput.innerText = decodeURIComponent(params.get('color') || '') || '3F51B5';
+    colorInput.innerText = decodeURIComponent(params.get('color') || '') || '#3F51B5';
 
     for (const i in imgs) {
         const dot = document.createElement('div');
@@ -94,7 +94,7 @@ function initSetup () {
         indicatorRow.appendChild(dot);
     }
     loadFonts();
-    selectedColor = '#' + colorInput.innerText;
+    selectedColor = colorInput.innerText;
     colorInput.style.backgroundColor = selectedColor;
 }
 
