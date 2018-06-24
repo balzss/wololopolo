@@ -15,6 +15,52 @@ body {
 canvas {
     width: 100%;
     height: auto;
+    background-color: white;
+}
+
+.canvas-container {
+    position: relative;
+    height: 100%;
+}
+
+.canvas-container .arrow.right {
+    right: 2px;
+}
+.canvas-container .arrow.left {
+    left: 2px;
+}
+.canvas-container .arrow {
+    text-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    position: absolute;
+    bottom: 12px;
+    color: #ccc;
+    opacity: 0.7;
+    font-size: 32px;
+    padding: 12px 16px;
+}
+
+.canvas-container .indicator-row {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.canvas-container .indicator-row .dot {
+    border-radius: 50%;
+    width: 6px;
+    height: 6px;
+    border: 1.5px solid #ccc;
+    margin: 0 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background-color: transparent;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.canvas-container .indicator-row .dot.active{
+    background-color: #ccc;
 }
 
 .panel {

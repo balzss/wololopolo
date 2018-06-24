@@ -1,7 +1,7 @@
 let touchStart = 0;
 let touchProgress = 0;
 let touchInProgress = false;
-let changeTarget = true;
+let changeTarget = 0;
 
 let scroll = false;
 
@@ -25,7 +25,6 @@ imgs[0].onload = () => {
 
 let canvasOffset = (imgs.length - 1) * canvas.width;
 let scrollTarget = imgs.length - 1;
-console.log(canvasOffset);
 
 const fontList = Object.freeze([
     'Bungee',
@@ -46,6 +45,7 @@ const colorInput = document.querySelector('#color-input');
 const colorPreview = document.querySelector('#color-preview');
 const outerShare = document.querySelector('.outer-share');
 const overImage = document.querySelector('.inner-share > img');
+const indicatorRow = document.querySelector('.indicator-row');
 
 let params = (new URL(document.location)).searchParams;
 let selectedColor, selectedFont;
@@ -88,6 +88,12 @@ function initSetup () {
     selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
     colorInput.value = decodeURIComponent(params.get('color') || '') || '3F51B5';
 
+    for (const i in imgs) {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (i == imgs.length -1 - scrollTarget) dot.classList.add('active');
+        indicatorRow.appendChild(dot);
+    }
     loadFonts();
     selectedColor = '#' + colorInput.value;
     colorPreview.style.backgroundColor = selectedColor;
@@ -223,6 +229,14 @@ canvas.addEventListener('touchstart', function (e) {
     touchInProgress = true;
 }, false);
 
+document.querySelector('.arrow.left').addEventListener('touchstart', function (e) {
+    changeBg(1);
+}, false);
+
+document.querySelector('.arrow.right').addEventListener('touchstart', function (e) {
+    changeBg(-1);
+}, false);
+
 canvas.addEventListener('touchmove', function (e) {
     canvasOffset = scrollTarget * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
     if (canvasOffset > scrollTarget * canvas.width + canvas.width / 3 && scrollTarget < imgs.length - 1) {
@@ -232,14 +246,29 @@ canvas.addEventListener('touchmove', function (e) {
     } else {
         changeTarget = 0;
     }
+    updateIndicators();
     window.requestAnimationFrame(drawPolo);
 }, false);
 
 canvas.addEventListener('touchend', function (e) {
     touchInProgress = false;
-    if (!scroll) {
-        scrollTarget += changeTarget;
-        scroll = true;
-    }
+    scrollTarget += changeTarget;
+    scroll = true;
     window.requestAnimationFrame(drawPolo);
 }, false);
+
+function changeBg (direction) {
+    if (scrollTarget + direction < 0 || scrollTarget + direction > imgs.length - 1) return;
+    console.log(scrollTarget + direction);
+    scrollTarget += direction;
+    updateIndicators();
+    scroll = true;
+    window.requestAnimationFrame(drawPolo);
+}
+
+function updateIndicators () {
+    document.querySelectorAll('.dot').forEach(e => e.classList.remove('active'));
+    const activeIndicator = imgs.length - 1 - (scrollTarget + changeTarget);
+    console.log(activeIndicator);
+    document.querySelectorAll('.dot')[activeIndicator].classList.add('active');
+}
