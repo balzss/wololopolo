@@ -244,32 +244,3 @@ button{
 .color-grid > div {
     border-radius: 6px;
 }
-
-.color-grid > div:nth-child(1) {
-    background-color: #9C27B0;
-}
-
-.color-grid > div:nth-child(2) {
-    background-color: #f44336;
-}
-.color-grid > div:nth-child(3) {
-    background-color: #009688;
-}
-.color-grid > div:nth-child(4) {
-    background-color: #3F51B5;
-}
-.color-grid > div:nth-child(5) {
-    background-color: #00BCD4;
-}
-.color-grid > div:nth-child(6) {
-    background-color: #795548;
-}
-.color-grid > div:nth-child(7) {
-    background-color: #FF9800;
-}
-.color-grid > div:nth-child(8) {
-    background-color: #4CAF50;
-}
-.color-grid > div:nth-child(9) {
-    background-color: #E91E63;
-}

@@ -10,6 +10,17 @@ let cachedText;
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
+const colors = [
+    '#9C27B0',
+    '#f44336',
+    '#009688',
+    '#3F51B5',
+    '#00BCD4',
+    '#795548',
+    '#FF9800',
+    '#4CAF50',
+    '#E91E63'
+];
 const imgPaths = ['t1.jpg', 't2.jpg', 't1.jpg', 't2.jpg', 't1.jpg'];
 const imgs = imgPaths.map(i => {
     let newImg = new Image();
@@ -43,6 +54,7 @@ const select = document.querySelector('#font-select');
 const poloText = document.querySelector('#polo-text');
 const colorDisplay = document.querySelector('.color-container');
 const colorInput = document.querySelector('.color-input');
+const colorGrid = document.querySelector('.color-grid');
 const outerShare = document.querySelector('.outer-share');
 const overImage = document.querySelector('.inner-share > img');
 const indicatorRow = document.querySelector('.indicator-row');
@@ -78,7 +90,12 @@ function loadFonts () {
 }
 
 function setColor () {
-    selectedColor = '#' + colorInput.value.repeat(6).substring(0, 6).toUpperCase();
+    if (colorInput.value.length == 3) {
+        selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
+        console.log(colorInput.value.split(''));
+    } else {
+        selectedColor = '#' + colorInput.value.toUpperCase();
+    }
     colorDisplay.innerText = selectedColor;
     colorDisplay.style.backgroundColor = selectedColor;
     requestAnimationFrame(drawPolo);
@@ -96,6 +113,18 @@ function initSetup () {
         indicatorRow.appendChild(dot);
     }
     loadFonts();
+
+    for (const c of colors) {
+        const colorElem = document.createElement('div');
+        colorElem.style.backgroundColor = c;
+
+        colorElem.addEventListener('touchstart', e => colorClickHandler(e, c));
+        colorElem.addEventListener('click', e => colorClickHandler(e, c));
+        colorElem.style.cursor = 'pointer';
+
+        colorGrid.prepend(colorElem);
+    }
+
     selectedColor = '#' + colorInput.value;
     colorDisplay.innerText = selectedColor;
     colorDisplay.style.backgroundColor = selectedColor;
@@ -113,7 +142,7 @@ colorInput.addEventListener('keyup', e => {
         colorInput.value.length > 6) {
         colorInput.value = colorInput.value.substring(0, colorInput.value.length - 1);
     }
-    if ([1, 2, 3, 6].indexOf(colorInput.value.length) > -1) {
+    if ([3, 6].indexOf(colorInput.value.length) > -1) {
         setColor();
     }
 });
@@ -287,7 +316,17 @@ function updateIndicators () {
     document.querySelectorAll('.dot')[activeIndicator].classList.add('active');
 }
 
-function toggle() {
+function toggle (e) {
+    e.preventDefault();
     const b = document.querySelector('.bubble');
     b.style.opacity = b.style.opacity === '0' ? '0.98' : '0';
 }
+
+function colorClickHandler (e, color) {
+    e.preventDefault();
+    colorInput.value = color.substring(1, 7);
+    setColor();
+}
+
+colorDisplay.addEventListener('touchstart', toggle);
+colorDisplay.addEventListener('click', toggle);
