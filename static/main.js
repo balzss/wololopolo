@@ -78,7 +78,6 @@ function loadFonts () {
 }
 
 function setColor () {
-
     selectedColor = '#' + colorInput.value.repeat(6).substring(0, 6).toUpperCase();
     colorDisplay.innerText = selectedColor;
     colorDisplay.style.backgroundColor = selectedColor;
@@ -88,16 +87,17 @@ function setColor () {
 function initSetup () {
     poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
     selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
-    colorDisplay.innerText = decodeURIComponent(params.get('color') || '') || '#3F51B5';
+    colorInput.value = decodeURIComponent(params.get('color') || '') || '3F51B5';
 
     for (const i in imgs) {
         const dot = document.createElement('div');
         dot.classList.add('dot');
-        if (i === imgs.length -1 - scrollTarget) dot.classList.add('active');
+        if (i === imgs.length - 1 - scrollTarget) dot.classList.add('active');
         indicatorRow.appendChild(dot);
     }
     loadFonts();
-    selectedColor = colorDisplay.innerText;
+    selectedColor = '#' + colorInput.value;
+    colorDisplay.innerText = selectedColor;
     colorDisplay.style.backgroundColor = selectedColor;
 }
 
@@ -125,7 +125,7 @@ function updateUri () {
 
 function updateUriFrontendOnly () {
     history.replaceState('state', 'Index',
-        `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(colorDisplay.innerText)}` +
+        `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(selectedColor.substring(1, 7))}` +
         `&font=${encodeURIComponent(selectedFont)}`);
 }
 
