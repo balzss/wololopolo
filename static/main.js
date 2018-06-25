@@ -216,7 +216,7 @@ function calculateText () {
     let yOffset = canvas.width / 3.5 - (longText.join(' ').length / 2);
     let cursor = 0;
     let textBuffer = '';
-    const targetChars = 5;
+    const targetChars = 4;
 
     while (true) {
         let wordCount = 1;
