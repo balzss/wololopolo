@@ -233,6 +233,7 @@ canvas {
     background-color: #f0f0f0;
     font-family: 'Roboto Slab', serif;
     font-weight: 400;
+    text-transform: uppercase;
 }
 
 button{
