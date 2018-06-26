@@ -1,14 +1,18 @@
-let touchStart = 0;
-let touchInProgress = false;
-let changeTarget = 0;
-let scroll = false;
+const fontList = Object.freeze([
+    'Bungee',
+    'Pacifico',
+    'Bangers',
+    'VT323',
+    'Faster+One',
+    'Passion+One',
+    'Nosifer',
+    'Monofett',
+    'Shrikhand',
+    'Sigmar+One',
+    'Titan+One'
+]);
 
-let cachedText;
-
-const canvas = document.querySelector('canvas');
-const context = canvas.getContext('2d');
-
-const colors = [
+const colors = Object.freeze([
     '#9C27B0',
     '#f44336',
     '#009688',
@@ -18,8 +22,8 @@ const colors = [
     '#FF9800',
     '#4CAF50',
     '#E91E63'
-];
-const imgPaths = ['t2.jpg', 't1.jpg', 't2.jpg', 't1.jpg'];
+]);
+const imgPaths = Object.freeze(['t2.jpg', 't1.jpg', 't2.jpg', 't1.jpg']);
 const imgs = imgPaths.map(i => {
     let newImg = new Image();
     newImg.src = 'static/img/' + i;
@@ -32,19 +36,6 @@ imgs[0].onload = () => {
     requestAnimationFrame(() => drawPolo(true));
 };
 
-const fontList = Object.freeze([
-    'Bungee',
-    'Pacifico',
-    'Bangers',
-    'Faster+One',
-    'Passion+One',
-    'Nosifer',
-    'Monofett',
-    'Shrikhand',
-    'Sigmar+One',
-    'Titan+One'
-]);
-
 const select = document.querySelector('#font-select');
 const poloText = document.querySelector('#polo-text');
 const colorDisplay = document.querySelector('.color-container');
@@ -53,50 +44,71 @@ const colorGrid = document.querySelector('.color-grid');
 const outerShare = document.querySelector('.outer-share');
 const overImage = document.querySelector('.inner-share > img');
 const indicatorRow = document.querySelector('.indicator-row');
+const canvas = document.querySelector('canvas');
+const context = canvas.getContext('2d');
 
-let selectedColor, selectedFont, scrollTarget, canvasOffset;
+let touchStart = 0;
+let touchInProgress = false;
+let changeTarget = 0;
+let scroll = false;
+
+let selectedColor, selectedFont, scrollTarget, canvasOffset, cachedText;
+
+poloText.addEventListener('keyup', () => {
+    updateUri();
+    requestAnimationFrame(() => drawPolo(true));
+});
+
+colorInput.addEventListener('keyup', e => {
+    if (!e.key.match(new RegExp('[a-fA-F0-9]')) ||
+        colorInput.value.length > 6) {
+        colorInput.value = colorInput.value.substring(0, colorInput.value.length - 1);
+    }
+    if ([3, 6].indexOf(colorInput.value.length) > -1) {
+        setColor();
+    }
+});
+
+colorDisplay.addEventListener('touchstart', toggle);
+colorDisplay.addEventListener('click', toggle);
+
+canvas.addEventListener('touchstart', function (e) {
+    touchStart = e.touches[0].clientX;
+    window.requestAnimationFrame(drawPolo);
+    touchInProgress = true;
+}, false);
+
+document.querySelector('.arrow.left').addEventListener('touchstart', e => changeBg(e, 1));
+document.querySelector('.arrow.left').addEventListener('click', e => changeBg(e, 1));
+document.querySelector('.arrow.right').addEventListener('touchstart', e => changeBg(e, -1));
+document.querySelector('.arrow.right').addEventListener('click', e => changeBg(e, -1));
+
+canvas.addEventListener('touchmove', function (e) {
+    canvasOffset = scrollTarget * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
+    if (canvasOffset > scrollTarget * canvas.width + canvas.width / 3 && scrollTarget < imgs.length - 1) {
+        changeTarget = 1;
+    } else if (canvasOffset < scrollTarget * canvas.width - canvas.width / 3 && scrollTarget > 0) {
+        changeTarget = -1;
+    } else {
+        changeTarget = 0;
+    }
+    updateIndicators();
+    window.requestAnimationFrame(drawPolo);
+}, false);
+
+canvas.addEventListener('touchend', function (e) {
+    touchInProgress = false;
+    scrollTarget += changeTarget;
+    scroll = true;
+    window.requestAnimationFrame(drawPolo);
+}, false);
 
 initSetup();
 
-function fontChange (selected) {
-    select.value = selected;
-    select.style.fontFamily = selected;
-    selectedFont = selected;
-    updateUriFrontendOnly();
-    requestAnimationFrame(() => drawPolo(true));
-}
-
-function loadFonts () {
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('type', 'text/css');
-    link.setAttribute('href', `https://fonts.googleapis.com/css?family=${fontList.join('|')}&subset=latin-ext`);
-    document.head.appendChild(link);
-
-    for (const font of fontList) {
-        const option = document.createElement('option');
-        const fontName = font.replace(/\+/g, ' ');
-        option.style.fontFamily = fontName;
-        option.innerText = fontName;
-        select.appendChild(option);
-    }
-    select.value = selectedFont;
-    select.style.fontFamily = selectedFont;
-}
-
-function setColor () {
-    if (colorInput.value.length == 3) {
-        selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
-    } else {
-        selectedColor = '#' + colorInput.value.toUpperCase();
-    }
-    colorDisplay.innerText = selectedColor;
-    colorDisplay.style.backgroundColor = selectedColor;
-    updateUriFrontendOnly();
-    requestAnimationFrame(drawPolo);
-}
-
 function initSetup () {
+    context.globalCompositeOperation = 'normal';
+    context.textAlign = 'center';
+
     const params = (new URL(document.location)).searchParams;
 
     poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
@@ -129,30 +141,90 @@ function initSetup () {
     colorDisplay.style.backgroundColor = selectedColor;
 }
 
-context.globalCompositeOperation = 'normal';
-context.textAlign = 'center';
-
-poloText.addEventListener('keyup', () => {
-    updateUriFrontendOnly();
+function fontChange (selected) {
+    select.value = selected;
+    select.style.fontFamily = selected;
+    selectedFont = selected;
+    updateUri();
     requestAnimationFrame(() => drawPolo(true));
-});
-
-colorInput.addEventListener('keyup', e => {
-    if (!e.key.match(new RegExp('[a-fA-F0-9]')) ||
-        colorInput.value.length > 6) {
-        colorInput.value = colorInput.value.substring(0, colorInput.value.length - 1);
-    }
-    if ([3, 6].indexOf(colorInput.value.length) > -1) {
-        setColor();
-    }
-});
-
-function updateUri () {
-    history.replaceState('state', 'Index',
-    `/${encodeURIComponent(poloText.value)}/${encodeURIComponent(colorDisplay.value)}/${encodeURIComponent(selectedFont)}`);
 }
 
-function updateUriFrontendOnly () {
+function loadFonts () {
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('type', 'text/css');
+    link.setAttribute('href', `https://fonts.googleapis.com/css?family=${fontList.join('|')}&subset=latin-ext`);
+    document.head.appendChild(link);
+
+    for (const font of fontList) {
+        const option = document.createElement('option');
+        const fontName = font.replace(/\+/g, ' ');
+        option.style.fontFamily = fontName;
+        option.innerText = fontName;
+        select.appendChild(option);
+    }
+    select.value = selectedFont;
+    select.style.fontFamily = selectedFont;
+}
+
+function setColor () {
+    if (colorInput.value.length == 3) {
+        selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
+    } else {
+        selectedColor = '#' + colorInput.value.toUpperCase();
+    }
+    colorDisplay.innerText = selectedColor;
+    colorDisplay.style.backgroundColor = selectedColor;
+    updateUri();
+    requestAnimationFrame(drawPolo);
+}
+
+function download () {
+    const link = document.createElement('a');
+    link.download = `wololo-${Date.now()}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+function openShare () {
+    overImage.src = canvas.toDataURL();
+    outerShare.style.display = 'block';
+}
+
+function closeShare () {
+    outerShare.style.display = 'none';
+}
+
+function changeBg (e, direction) {
+    e.preventDefault();
+    if (scrollTarget + direction < 0 || scrollTarget + direction > imgs.length - 1) return;
+    changeTarget = 0;
+    scrollTarget += direction;
+    updateIndicators();
+    scroll = true;
+    updateUri();
+    window.requestAnimationFrame(drawPolo);
+}
+
+function updateIndicators () {
+    document.querySelectorAll('.dot').forEach(e => e.classList.remove('active'));
+    const activeIndicator = imgs.length - 1 - (scrollTarget + changeTarget);
+    document.querySelectorAll('.dot')[activeIndicator].classList.add('active');
+}
+
+function toggle (e) {
+    e.preventDefault();
+    const b = document.querySelector('.bubble');
+    b.style.opacity = b.style.opacity === '0' ? '0.98' : '0';
+}
+
+function colorClickHandler (e, color) {
+    e.preventDefault();
+    colorInput.value = color.substring(1, 7);
+    setColor();
+}
+
+function updateUri () {
     const newUri = `?color=${selectedColor.substring(1, 7)}&font=${encodeURIComponent(selectedFont)}` +
         `&bg=${imgs.length - 1 - scrollTarget}&txt=${encodeURIComponent(poloText.value)}`;
     history.replaceState('state', 'Index', newUri);
@@ -198,12 +270,6 @@ function drawText (text) {
             context.fillText(line.text, xOffset2, line.yOffs);
         }
     }
-
-    // if (STATIC_SERVER) {
-    //     updateUriFrontendOnly();
-    // } else {
-    //     updateUri();
-    // }
 }
 
 function calculateText () {
@@ -250,82 +316,3 @@ function calculateText () {
 
     return returnText;
 }
-
-function download () {
-    const link = document.createElement('a');
-    link.download = `wololo-${Date.now()}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-}
-
-function openShare () {
-    overImage.src = canvas.toDataURL();
-    outerShare.style.display = 'block';
-}
-
-function closeShare () {
-    outerShare.style.display = 'none';
-}
-
-canvas.addEventListener('touchstart', function (e) {
-    touchStart = e.touches[0].clientX;
-    window.requestAnimationFrame(drawPolo);
-    touchInProgress = true;
-}, false);
-
-document.querySelector('.arrow.left').addEventListener('touchstart', e => changeBg(e, 1));
-document.querySelector('.arrow.left').addEventListener('click', e => changeBg(e, 1));
-document.querySelector('.arrow.right').addEventListener('touchstart', e => changeBg(e, -1));
-document.querySelector('.arrow.right').addEventListener('click', e => changeBg(e, -1));
-
-canvas.addEventListener('touchmove', function (e) {
-    canvasOffset = scrollTarget * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
-    if (canvasOffset > scrollTarget * canvas.width + canvas.width / 3 && scrollTarget < imgs.length - 1) {
-        changeTarget = 1;
-    } else if (canvasOffset < scrollTarget * canvas.width - canvas.width / 3 && scrollTarget > 0) {
-        changeTarget = -1;
-    } else {
-        changeTarget = 0;
-    }
-    updateIndicators();
-    window.requestAnimationFrame(drawPolo);
-}, false);
-
-canvas.addEventListener('touchend', function (e) {
-    touchInProgress = false;
-    scrollTarget += changeTarget;
-    scroll = true;
-    window.requestAnimationFrame(drawPolo);
-}, false);
-
-function changeBg (e, direction) {
-    e.preventDefault();
-    if (scrollTarget + direction < 0 || scrollTarget + direction > imgs.length - 1) return;
-    changeTarget = 0;
-    scrollTarget += direction;
-    updateIndicators();
-    scroll = true;
-    updateUriFrontendOnly();
-    window.requestAnimationFrame(drawPolo);
-}
-
-function updateIndicators () {
-    document.querySelectorAll('.dot').forEach(e => e.classList.remove('active'));
-    const activeIndicator = imgs.length - 1 - (scrollTarget + changeTarget);
-    document.querySelectorAll('.dot')[activeIndicator].classList.add('active');
-}
-
-function toggle (e) {
-    e.preventDefault();
-    const b = document.querySelector('.bubble');
-    b.style.opacity = b.style.opacity === '0' ? '0.98' : '0';
-}
-
-function colorClickHandler (e, color) {
-    e.preventDefault();
-    colorInput.value = color.substring(1, 7);
-    setColor();
-}
-
-colorDisplay.addEventListener('touchstart', toggle);
-colorDisplay.addEventListener('click', toggle);
