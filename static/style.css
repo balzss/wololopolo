@@ -121,13 +121,13 @@ canvas {
 }
 
 .inner-share {
-    max-width: 440px;
+    max-width: 400px;
     margin: auto;
 }
 
 .inner-share > p {
     color: #f0f0f0;
-    margin: 24px 0;
+    margin: 16px 0;
     font-size = 18px;
 }
 
