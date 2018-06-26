@@ -1,8 +1,6 @@
 let touchStart = 0;
-let touchProgress = 0;
 let touchInProgress = false;
 let changeTarget = 0;
-
 let scroll = false;
 
 let cachedText;
@@ -21,7 +19,7 @@ const colors = [
     '#4CAF50',
     '#E91E63'
 ];
-const imgPaths = ['t1.jpg', 't2.jpg', 't1.jpg', 't2.jpg', 't1.jpg'];
+const imgPaths = ['t2.jpg', 't1.jpg', 't2.jpg', 't1.jpg'];
 const imgs = imgPaths.map(i => {
     let newImg = new Image();
     newImg.src = 'static/img/' + i;
@@ -33,9 +31,6 @@ imgs[0].onload = () => {
     colorDisplay.style.backgroundColor = selectedColor;
     requestAnimationFrame(() => drawPolo(true));
 };
-
-let canvasOffset = (imgs.length - 1) * canvas.width;
-let scrollTarget = imgs.length - 1;
 
 const fontList = Object.freeze([
     'Bungee',
@@ -59,8 +54,7 @@ const outerShare = document.querySelector('.outer-share');
 const overImage = document.querySelector('.inner-share > img');
 const indicatorRow = document.querySelector('.indicator-row');
 
-let params = (new URL(document.location)).searchParams;
-let selectedColor, selectedFont;
+let selectedColor, selectedFont, scrollTarget, canvasOffset;
 
 initSetup();
 
@@ -68,6 +62,7 @@ function fontChange (selected) {
     select.value = selected;
     select.style.fontFamily = selected;
     selectedFont = selected;
+    updateUriFrontendOnly();
     requestAnimationFrame(() => drawPolo(true));
 }
 
@@ -92,24 +87,28 @@ function loadFonts () {
 function setColor () {
     if (colorInput.value.length == 3) {
         selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
-        console.log(colorInput.value.split(''));
     } else {
         selectedColor = '#' + colorInput.value.toUpperCase();
     }
     colorDisplay.innerText = selectedColor;
     colorDisplay.style.backgroundColor = selectedColor;
+    updateUriFrontendOnly();
     requestAnimationFrame(drawPolo);
 }
 
 function initSetup () {
+    const params = (new URL(document.location)).searchParams;
+
     poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
     selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
-    colorInput.value = decodeURIComponent(params.get('color') || '') || '3F51B5';
+    colorInput.value = params.get('color') || '3F51B5';
+    scrollTarget = imgs.length - 1 - (parseInt(params.get('bg')) || 0);
+    canvasOffset = scrollTarget * canvas.width;
 
     for (const i in imgs) {
         const dot = document.createElement('div');
         dot.classList.add('dot');
-        if (i === imgs.length - 1 - scrollTarget) dot.classList.add('active');
+        if (i == imgs.length - 1 - scrollTarget) dot.classList.add('active');
         indicatorRow.appendChild(dot);
     }
     loadFonts();
@@ -134,6 +133,7 @@ context.globalCompositeOperation = 'normal';
 context.textAlign = 'center';
 
 poloText.addEventListener('keyup', () => {
+    updateUriFrontendOnly();
     requestAnimationFrame(() => drawPolo(true));
 });
 
@@ -153,9 +153,9 @@ function updateUri () {
 }
 
 function updateUriFrontendOnly () {
-    history.replaceState('state', 'Index',
-        `?txt=${encodeURIComponent(poloText.value)}&color=${encodeURIComponent(selectedColor.substring(1, 7))}` +
-        `&font=${encodeURIComponent(selectedFont)}`);
+    const newUri = `?color=${selectedColor.substring(1, 7)}&font=${encodeURIComponent(selectedFont)}` +
+        `&bg=${imgs.length - 1 - scrollTarget}&txt=${encodeURIComponent(poloText.value)}`;
+    history.replaceState('state', 'Index', newUri);
 }
 
 function drawPolo (textChanged = false) {
@@ -199,11 +199,11 @@ function drawText (text) {
         }
     }
 
-    if (STATIC_SERVER) {
-        updateUriFrontendOnly();
-    } else {
-        updateUri();
-    }
+    // if (STATIC_SERVER) {
+    //     updateUriFrontendOnly();
+    // } else {
+    //     updateUri();
+    // }
 }
 
 function calculateText () {
@@ -273,13 +273,10 @@ canvas.addEventListener('touchstart', function (e) {
     touchInProgress = true;
 }, false);
 
-document.querySelector('.arrow.left').addEventListener('touchstart', function (e) {
-    changeBg(1);
-}, false);
-
-document.querySelector('.arrow.right').addEventListener('touchstart', function (e) {
-    changeBg(-1);
-}, false);
+document.querySelector('.arrow.left').addEventListener('touchstart', e => changeBg(e, 1));
+document.querySelector('.arrow.left').addEventListener('click', e => changeBg(e, 1));
+document.querySelector('.arrow.right').addEventListener('touchstart', e => changeBg(e, -1));
+document.querySelector('.arrow.right').addEventListener('click', e => changeBg(e, -1));
 
 canvas.addEventListener('touchmove', function (e) {
     canvasOffset = scrollTarget * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
@@ -301,12 +298,14 @@ canvas.addEventListener('touchend', function (e) {
     window.requestAnimationFrame(drawPolo);
 }, false);
 
-function changeBg (direction) {
+function changeBg (e, direction) {
+    e.preventDefault();
     if (scrollTarget + direction < 0 || scrollTarget + direction > imgs.length - 1) return;
     changeTarget = 0;
     scrollTarget += direction;
     updateIndicators();
     scroll = true;
+    updateUriFrontendOnly();
     window.requestAnimationFrame(drawPolo);
 }
 

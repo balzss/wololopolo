@@ -37,6 +37,7 @@ canvas {
     opacity: 0.5;
     font-size: 32px;
     padding: 12px 16px;
+    cursor: pointer;
 }
 
 .canvas-container .indicator-row {
