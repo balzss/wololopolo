@@ -23,12 +23,16 @@ const colors = Object.freeze([
     '#4CAF50',
     '#E91E63'
 ]);
+
 const imgPaths = Object.freeze(['t2.jpg', 't1.jpg', 't2.jpg', 't1.jpg']);
 const imgs = imgPaths.map(i => {
     let newImg = new Image();
     newImg.src = 'static/img/' + i;
     return newImg;
 });
+
+const hexRegex = /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
+const notHexChars = /[^a-fA-F0-9]/
 
 imgs[0].onload = () => {
     selectedColor = colorDisplay.innerText;
@@ -59,15 +63,25 @@ poloText.addEventListener('keyup', () => {
     requestAnimationFrame(() => drawPolo(true));
 });
 
-colorInput.addEventListener('keyup', e => {
-    if (!e.key.match(new RegExp('[a-fA-F0-9]')) ||
-        colorInput.value.length > 6) {
-        colorInput.value = colorInput.value.substring(0, colorInput.value.length - 1);
+colorInput.addEventListener('keyup', e => { handleColorInputChange(e.key) });
+
+function handleColorInputChange (key) {
+    if (colorInput.value.length > 6) {
+        colorInput.value = colorInput.value.substring(0, 6)
     }
-    if ([3, 6].indexOf(colorInput.value.length) > -1) {
+
+    if (key.match(notHexChars)) {
+        colorInput.value = colorInput.value.replace(notHexChars, '')
+    }
+    
+    const inputLength = colorInput.value.length
+    if (inputLength !== 3 && inputLength !== 6) {
+        return
+    }
+    if (colorInput.value.match(hexRegex)) {
         setColor();
     }
-});
+}
 
 colorDisplay.addEventListener('touchstart', toggle);
 colorDisplay.addEventListener('click', toggle);
