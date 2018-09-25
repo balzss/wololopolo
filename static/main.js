@@ -31,8 +31,8 @@ const imgs = imgPaths.map(i => {
     return newImg;
 });
 
-const hexRegex = /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
-const notHexChars = /[^a-fA-F0-9]/
+const hexRegex = /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+const notHexChars = /[^a-fA-F0-9]/;
 
 imgs[0].onload = () => {
     selectedColor = colorDisplay.innerText;
@@ -63,20 +63,20 @@ poloText.addEventListener('keyup', () => {
     requestAnimationFrame(() => drawPolo(true));
 });
 
-colorInput.addEventListener('keyup', e => { handleColorInputChange(e.key) });
+colorInput.addEventListener('keyup', e => { handleColorInputChange(e.key); });
 
 function handleColorInputChange (key) {
     if (colorInput.value.length > 6) {
-        colorInput.value = colorInput.value.substring(0, 6)
+        colorInput.value = colorInput.value.substring(0, 6);
     }
 
     if (key.match(notHexChars)) {
-        colorInput.value = colorInput.value.replace(notHexChars, '')
+        colorInput.value = colorInput.value.replace(notHexChars, '');
     }
-    
-    const inputLength = colorInput.value.length
+
+    const inputLength = colorInput.value.length;
     if (inputLength !== 3 && inputLength !== 6) {
-        return
+        return;
     }
     if (colorInput.value.match(hexRegex)) {
         setColor();
@@ -134,17 +134,17 @@ function initSetup () {
     for (const i in imgs) {
         const dot = document.createElement('div');
         dot.classList.add('dot');
-        if (i == imgs.length - 1 - scrollTarget) dot.classList.add('active');
+        if (i === imgs.length - 1 - scrollTarget) dot.classList.add('active');
         indicatorRow.appendChild(dot);
     }
     loadFonts();
 
-    for (const c of colors) {
+    for (const color of colors) {
         const colorElem = document.createElement('div');
-        colorElem.style.backgroundColor = c;
+        colorElem.style.backgroundColor = color;
 
-        colorElem.addEventListener('touchstart', e => colorClickHandler(e, c));
-        colorElem.addEventListener('click', e => colorClickHandler(e, c));
+        colorElem.addEventListener('touchstart', e => colorClickHandler(e, color));
+        colorElem.addEventListener('click', e => colorClickHandler(e, color));
         colorElem.style.cursor = 'pointer';
 
         colorGrid.prepend(colorElem);
@@ -182,7 +182,7 @@ function loadFonts () {
 }
 
 function setColor () {
-    if (colorInput.value.length == 3) {
+    if (colorInput.value.length === 3) {
         selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
     } else {
         selectedColor = '#' + colorInput.value.toUpperCase();
@@ -228,8 +228,8 @@ function updateIndicators () {
 
 function toggle (e) {
     e.preventDefault();
-    const b = document.querySelector('.bubble');
-    b.style.opacity = b.style.opacity === '0' ? '0.98' : '0';
+    const bubble = document.querySelector('.bubble');
+    bubble.style.opacity = bubble.style.opacity === '0' ? '0.98' : '0';
 }
 
 function colorClickHandler (e, color) {
@@ -320,7 +320,7 @@ function calculateText () {
 
             if (textWidth <= targetWidth) {
                 yOffset += fontSize + linePadding;
-                returnText.push({text: textBuffer, yOffs: yOffset, font: `${fontSize}px ${selectedFont}`});
+                returnText.push({ text: textBuffer, yOffs: yOffset, font: `${fontSize}px ${selectedFont}` });
                 break;
             } else {
                 fontSize--;
