@@ -295,29 +295,31 @@ function drawText (text) {
 function calculateText () {
     let returnText = [];
 
-    const longText = poloText.value.split(' ') || [''];
+    const rawWords = poloText.value.split(' ') || [''];
+    const words = rawWords.filter(word => word !== '');
     const targetWidth = canvas.width / 4;
     const linePadding = 8;
+    const targetChars = 4;
 
-    let yOffset = canvas.width / 3.5 - (longText.join(' ').length / 2);
+    let yOffset = canvas.width / 3.5 - (words.join(' ').length / 2);
     let cursor = 0;
     let textBuffer = '';
-    const targetChars = 4;
 
     while (true) {
         let wordCount = 1;
         let fontSize = 100;
 
-        if (cursor >= longText.length) break;
+        if (cursor >= words.length) break;
 
         while (true) {
-            textBuffer = longText.slice(cursor, cursor + wordCount).join(' ');
-            if (textBuffer.length >= targetChars || (cursor + wordCount) > longText.length) {
+            textBuffer = words.slice(cursor, cursor + wordCount).join(' ');
+
+            if (textBuffer.length >= targetChars || (cursor + wordCount) > words.length) {
                 cursor += wordCount;
                 break;
-            } else {
-                wordCount++;
             }
+
+            wordCount++;
         }
 
         while (true) {
@@ -328,9 +330,9 @@ function calculateText () {
                 yOffset += fontSize + linePadding;
                 returnText.push({ text: textBuffer, yOffs: yOffset, font: `${fontSize}px ${selectedFont}` });
                 break;
-            } else {
-                fontSize--;
             }
+
+            fontSize--;
         }
     }
 
