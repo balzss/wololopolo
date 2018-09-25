@@ -78,9 +78,8 @@ function handleColorInputChange (key) {
     if (inputLength !== 3 && inputLength !== 6) {
         return;
     }
-    if (colorInput.value.match(hexRegex)) {
-        setColor();
-    }
+
+    setColor(colorInput.value);
 }
 
 colorDisplay.addEventListener('touchstart', toggle);
@@ -181,16 +180,22 @@ function loadFonts () {
     select.style.fontFamily = selectedFont;
 }
 
-function setColor () {
-    if (colorInput.value.length === 3) {
-        selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
-    } else {
-        selectedColor = '#' + colorInput.value.toUpperCase();
+function setColor (noHashHex) {
+    if (!noHashHex.match(hexRegex)) {
+        return;
     }
+
+    const sixCharacterHex = colorInput.value.length === 3 ? threeToSixCharacterHex(colorInput.value) : colorInput.value;
+    selectedColor = '#' + sixCharacterHex.toUpperCase();
+
     colorDisplay.innerText = selectedColor;
     colorDisplay.style.backgroundColor = selectedColor;
     updateUri();
     requestAnimationFrame(drawPolo);
+}
+
+function threeToSixCharacterHex (hex) {
+    return hex.split('').reduce((acc, char) => acc + char + char, '');
 }
 
 function download () {
@@ -234,8 +239,9 @@ function toggle (e) {
 
 function colorClickHandler (e, color) {
     e.preventDefault();
-    colorInput.value = color.substring(1, 7);
-    setColor();
+    const noHashHex = color.substring(1, 7);
+    colorInput.value = noHashHex;
+    setColor(noHashHex);
 }
 
 function updateUri () {
