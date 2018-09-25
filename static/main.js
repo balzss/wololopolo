@@ -295,7 +295,7 @@ function drawText (text) {
 function calculateText () {
     let returnText = [];
 
-    const longText = poloText.value.split(' ') || ''.split(' ');
+    const longText = poloText.value.split(' ') || [''];
     const targetWidth = canvas.width / 4;
     const linePadding = 8;
 
