@@ -2,7 +2,6 @@ module.exports = {
   "env": {
     "webextensions": true,
     "browser": true,
-    "commonjs": true,
     "es6": true,
   },
   "globals": {

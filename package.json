@@ -1,0 +1,33 @@
+{
+  "name": "wololopolo",
+  "version": "0.1.0",
+  "description": "The future of expressing thoughts, ideas and emotions",
+  "main": "static/main.js",
+  "scripts": {
+    "test": "echo \"Yolo\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/quazimut/wololopolo.git"
+  },
+  "keywords": [
+    "editor",
+    "wololo",
+    "t-shirt",
+    "polo"
+  ],
+  "author": "Wololo Group <yololo@wololopolo.com> (https://wololopolo.com)",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/quazimut/wololopolo/issues"
+  },
+  "homepage": "https://github.com/quazimut/wololopolo#readme",
+  "devDependencies": {
+    "eslint": "^5.6.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
+}
