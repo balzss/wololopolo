@@ -78,9 +78,8 @@ function handleColorInputChange (key) {
     if (inputLength !== 3 && inputLength !== 6) {
         return;
     }
-    if (colorInput.value.match(hexRegex)) {
-        setColor();
-    }
+
+    setColor(colorInput.value);
 }
 
 colorDisplay.addEventListener('touchstart', toggle);
@@ -181,16 +180,22 @@ function loadFonts () {
     select.style.fontFamily = selectedFont;
 }
 
-function setColor () {
-    if (colorInput.value.length === 3) {
-        selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
-    } else {
-        selectedColor = '#' + colorInput.value.toUpperCase();
+function setColor (noHashHex) {
+    if (!noHashHex.match(hexRegex)) {
+        return;
     }
+
+    const sixCharacterHex = colorInput.value.length === 3 ? threeToSixCharacterHex(colorInput.value) : colorInput.value;
+    selectedColor = '#' + sixCharacterHex.toUpperCase();
+
     colorDisplay.innerText = selectedColor;
     colorDisplay.style.backgroundColor = selectedColor;
     updateUri();
     requestAnimationFrame(drawPolo);
+}
+
+function threeToSixCharacterHex (hex) {
+    return hex.split('').reduce((acc, char) => acc + char + char, '');
 }
 
 function download () {
@@ -234,8 +239,9 @@ function toggle (e) {
 
 function colorClickHandler (e, color) {
     e.preventDefault();
-    colorInput.value = color.substring(1, 7);
-    setColor();
+    const noHashHex = color.substring(1, 7);
+    colorInput.value = noHashHex;
+    setColor(noHashHex);
 }
 
 function updateUri () {
@@ -289,29 +295,31 @@ function drawText (text) {
 function calculateText () {
     let returnText = [];
 
-    const longText = poloText.value.split(' ') || ''.split(' ');
+    const rawWords = poloText.value.split(' ') || [''];
+    const words = rawWords.filter(word => word !== '');
     const targetWidth = canvas.width / 4;
     const linePadding = 8;
+    const targetChars = 4;
 
-    let yOffset = canvas.width / 3.5 - (longText.join(' ').length / 2);
+    let yOffset = canvas.width / 3.5 - (words.join(' ').length / 2);
     let cursor = 0;
     let textBuffer = '';
-    const targetChars = 4;
 
     while (true) {
         let wordCount = 1;
         let fontSize = 100;
 
-        if (cursor >= longText.length) break;
+        if (cursor >= words.length) break;
 
         while (true) {
-            textBuffer = longText.slice(cursor, cursor + wordCount).join(' ');
-            if (textBuffer.length >= targetChars || (cursor + wordCount) > longText.length) {
+            textBuffer = words.slice(cursor, cursor + wordCount).join(' ');
+
+            if (textBuffer.length >= targetChars || (cursor + wordCount) > words.length) {
                 cursor += wordCount;
                 break;
-            } else {
-                wordCount++;
             }
+
+            wordCount++;
         }
 
         while (true) {
@@ -322,9 +330,9 @@ function calculateText () {
                 yOffset += fontSize + linePadding;
                 returnText.push({ text: textBuffer, yOffs: yOffset, font: `${fontSize}px ${selectedFont}` });
                 break;
-            } else {
-                fontSize--;
             }
+
+            fontSize--;
         }
     }
 
