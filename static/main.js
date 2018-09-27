@@ -12,19 +12,34 @@ const fontList = Object.freeze([
     'Titan+One'
 ]);
 
-const colors = Object.freeze([
-    '#9C27B0',
-    '#f44336',
-    '#009688',
-    '#3F51B5',
-    '#00BCD4',
-    '#795548',
-    '#FF9800',
-    '#4CAF50',
-    '#E91E63'
-]);
+const colorSchemes = {
+    'dark': Object.freeze([
+        '#ffffff',
+        '#cccccc',
+        '#bf8b56',
+        '#8bbf56',
+        '#56bf8b',
+        '#568bbf',
+        '#8b56bf',
+        '#bf568b',
+        '#bf5656'
+    ]),
+    'light': Object.freeze([
+        '#000000',
+        '#666666',
+        '#EA9560',
+        '#FFCC00',
+        '#8BD649',
+        '#80CBC4',
+        '#89DDFF',
+        '#82AAFF',
+        '#EC5F67'
+    ])
+};
 
 const imgPaths = Object.freeze(['t2.jpg', 't1.jpg', 't2.jpg', 't1.jpg']);
+const imgColorScheme = Object.freeze(['dark', 'light', 'dark', 'light']);
+
 const imgs = imgPaths.map(i => {
     let newImg = new Image();
     newImg.src = 'static/img/' + i;
@@ -44,7 +59,6 @@ const select = document.querySelector('#font-select');
 const poloText = document.querySelector('#polo-text');
 const colorDisplay = document.querySelector('.color-container');
 const colorInput = document.querySelector('.color-input');
-const colorGrid = document.querySelector('.color-grid');
 const outerShare = document.querySelector('.outer-share');
 const overImage = document.querySelector('.inner-share > img');
 const indicatorRow = document.querySelector('.indicator-row');
@@ -139,28 +153,19 @@ function initSetup () {
     }
     loadFonts();
 
-    for (const color of colors) {
-        const colorElem = document.createElement('div');
-        colorElem.style.backgroundColor = color;
-
-        colorElem.addEventListener('touchstart', e => colorClickHandler(e, color));
-        colorElem.addEventListener('click', e => colorClickHandler(e, color));
+    const colorScheme = getCurrentColorSheme();
+    console.log(colorScheme);
+    for (let colorEntry of colorScheme.entries()) {
+        const colorElem = getColorElem(colorEntry[0]);
+        colorElem.style.backgroundColor = colorEntry[1];
+        colorElem.addEventListener('touchstart', e => colorClickHandler(e, colorEntry[0]));
+        colorElem.addEventListener('click', e => colorClickHandler(e, colorEntry[0]));
         colorElem.style.cursor = 'pointer';
-
-        colorGrid.prepend(colorElem);
     }
 
     selectedColor = '#' + colorInput.value;
     colorDisplay.innerText = selectedColor;
     colorDisplay.style.backgroundColor = selectedColor;
-}
-
-function fontChange (selected) {
-    select.value = selected;
-    select.style.fontFamily = selected;
-    selectedFont = selected;
-    updateUri();
-    requestAnimationFrame(() => drawPolo(true));
 }
 
 function loadFonts () {
@@ -181,16 +186,12 @@ function loadFonts () {
     select.style.fontFamily = selectedFont;
 }
 
-function setColor () {
-    if (colorInput.value.length === 3) {
-        selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
-    } else {
-        selectedColor = '#' + colorInput.value.toUpperCase();
-    }
-    colorDisplay.innerText = selectedColor;
-    colorDisplay.style.backgroundColor = selectedColor;
+function fontChange (selected) {
+    select.value = selected;
+    select.style.fontFamily = selected;
+    selectedFont = selected;
     updateUri();
-    requestAnimationFrame(drawPolo);
+    requestAnimationFrame(() => drawPolo(true));
 }
 
 function download () {
@@ -209,12 +210,25 @@ function closeShare () {
     outerShare.style.display = 'none';
 }
 
+function setColor () {
+    if (colorInput.value.length === 3) {
+        selectedColor = '#' + colorInput.value.split('').reduce((acc, char) => acc + char + char, '').toUpperCase();
+    } else {
+        selectedColor = '#' + colorInput.value.toUpperCase();
+    }
+    colorDisplay.innerText = selectedColor;
+    colorDisplay.style.backgroundColor = selectedColor;
+    updateUri();
+    requestAnimationFrame(drawPolo);
+}
+
 function changeBg (e, direction) {
     e.preventDefault();
     if (scrollTarget + direction < 0 || scrollTarget + direction > imgs.length - 1) return;
     changeTarget = 0;
     scrollTarget += direction;
     updateIndicators();
+    updateColorPickerScheme();
     scroll = true;
     updateUri();
     window.requestAnimationFrame(drawPolo);
@@ -226,16 +240,33 @@ function updateIndicators () {
     document.querySelectorAll('.dot')[activeIndicator].classList.add('active');
 }
 
-function toggle (e) {
+function updateColorPickerScheme () {
+    const colorScheme = getCurrentColorSheme();
+    for (let colorEntry of colorScheme.entries()) {
+        const colorElem = getColorElem(colorEntry[0]);
+        colorElem.style.backgroundColor = colorEntry[1];
+    }
+}
+
+function getColorElem (colorIndex) {
+    return document.querySelector(`.color-${colorIndex}`);
+}
+
+function toggle (e) { // Todo mi ez?
     e.preventDefault();
     const bubble = document.querySelector('.bubble');
     bubble.style.opacity = bubble.style.opacity === '0' ? '0.98' : '0';
 }
 
-function colorClickHandler (e, color) {
+function colorClickHandler (e, colorIndex) {
     e.preventDefault();
-    colorInput.value = color.substring(1, 7);
+    const colorScheme = getCurrentColorSheme();
+    colorInput.value = colorScheme[colorIndex].substring(1, 7);
     setColor();
+}
+
+function getCurrentColorSheme () {
+    return colorSchemes[imgColorScheme[scrollTarget]];
 }
 
 function updateUri () {
@@ -287,16 +318,15 @@ function drawText (text) {
 }
 
 function calculateText () {
-    let returnText = [];
-
+    const targetChars = 4;
     const longText = poloText.value.split(' ') || ''.split(' ');
     const targetWidth = canvas.width / 4;
     const linePadding = 8;
 
+    let returnText = [];
     let yOffset = canvas.width / 3.5 - (longText.join(' ').length / 2);
     let cursor = 0;
     let textBuffer = '';
-    const targetChars = 4;
 
     while (true) {
         let wordCount = 1;
