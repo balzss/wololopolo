@@ -4,7 +4,10 @@
   "description": "The future of expressing thoughts, ideas and emotions",
   "main": "static/main.js",
   "scripts": {
-    "test": "echo \"Yolo\""
+    "test": "npm run css:check",
+    "css:test": "sass --check src/style.scss",
+    "css:build": "sass --style compressed src/style.scss static/style.css",
+    "css:watch": "sass --watch src/style.scss:static/style.css"
   },
   "repository": {
     "type": "git",
@@ -28,6 +31,10 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-standard": "^4.0.0",
+    "sass": "1.14.1",
+    "normalize.css": "8.0.0"
+  },
+  "dependencies": {
   }
 }
