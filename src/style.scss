@@ -215,6 +215,8 @@ input {
     background: $color_log_cabin_approx;
     border-radius: .4em;
     box-shadow: 0 1px 3px $black_12, 0 1px 2px $black_24;
+	opacity: 0;
+	z-index: -1000;
 
     &:after {
         z-index: 1000;
@@ -230,7 +232,13 @@ input {
         margin-left: -12px;
         margin-top: -12px;
     }
+
+	&.opened {
+		opacity: 0.98;
+		z-index: 1000;
+	}
 }
+
 
 .color-grid {
     display: grid;
