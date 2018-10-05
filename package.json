@@ -35,6 +35,5 @@
     "sass": "1.14.1",
     "normalize.css": "8.0.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

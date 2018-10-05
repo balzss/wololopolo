@@ -70,7 +70,7 @@ let touchInProgress = false;
 let changeTarget = 0;
 let scroll = false;
 
-let selectedColor, selectedFont, scrollTarget, canvasOffset, cachedText;
+let selectedColor, selectedFont, selectedPolo, canvasOffset, cachedText;
 
 poloText.addEventListener('keyup', () => {
     updateUri();
@@ -96,8 +96,8 @@ function handleColorInputChange (key) {
     setColor(colorInput.value);
 }
 
-colorDisplay.addEventListener('touchstart', toggle);
-colorDisplay.addEventListener('click', toggle);
+colorDisplay.addEventListener('touchstart', toggleColorPicker);
+colorDisplay.addEventListener('click', toggleColorPicker);
 
 canvas.addEventListener('touchstart', function (e) {
     touchStart = e.touches[0].clientX;
@@ -111,10 +111,10 @@ document.querySelector('.arrow.right').addEventListener('touchstart', e => chang
 document.querySelector('.arrow.right').addEventListener('click', e => changeBg(e, -1));
 
 canvas.addEventListener('touchmove', function (e) {
-    canvasOffset = scrollTarget * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
-    if (canvasOffset > scrollTarget * canvas.width + canvas.width / 3 && scrollTarget < imgs.length - 1) {
+    canvasOffset = selectedPolo * canvas.width + (e.changedTouches[0].clientX - touchStart) * 3;
+    if (canvasOffset > selectedPolo * canvas.width + canvas.width / 3 && selectedPolo < imgs.length - 1) {
         changeTarget = 1;
-    } else if (canvasOffset < scrollTarget * canvas.width - canvas.width / 3 && scrollTarget > 0) {
+    } else if (canvasOffset < selectedPolo * canvas.width - canvas.width / 3 && selectedPolo > 0) {
         changeTarget = -1;
     } else {
         changeTarget = 0;
@@ -125,7 +125,7 @@ canvas.addEventListener('touchmove', function (e) {
 
 canvas.addEventListener('touchend', function (e) {
     touchInProgress = false;
-    scrollTarget += changeTarget;
+    selectedPolo += changeTarget;
     scroll = true;
     window.requestAnimationFrame(drawPolo);
 }, false);
@@ -141,13 +141,13 @@ function initSetup () {
     poloText.value = decodeURIComponent(params.get('txt') || '') || 'Hello';
     selectedFont = (decodeURIComponent(params.get('font') || '') || fontList[0]).replace(/\+/g, ' ');
     colorInput.value = params.get('color') || '3F51B5';
-    scrollTarget = imgs.length - 1 - (parseInt(params.get('bg')) || 0);
-    canvasOffset = scrollTarget * canvas.width;
+    selectedPolo = imgs.length - 1 - (parseInt(params.get('bg')) || 0);
+    canvasOffset = selectedPolo * canvas.width;
 
     for (const i in imgs) {
         const dot = document.createElement('div');
         dot.classList.add('dot');
-        if (i === imgs.length - 1 - scrollTarget) dot.classList.add('active');
+        if (i === imgs.length - 1 - selectedPolo) dot.classList.add('active');
         indicatorRow.appendChild(dot);
     }
     loadFonts();
@@ -229,9 +229,9 @@ function closeShare () {
 
 function changeBg (e, direction) {
     e.preventDefault();
-    if (scrollTarget + direction < 0 || scrollTarget + direction > imgs.length - 1) return;
+    if (selectedPolo + direction < 0 || selectedPolo + direction > imgs.length - 1) return;
     changeTarget = 0;
-    scrollTarget += direction;
+    selectedPolo += direction;
     updateIndicators();
     updateColorPickerScheme();
     scroll = true;
@@ -241,7 +241,7 @@ function changeBg (e, direction) {
 
 function updateIndicators () {
     document.querySelectorAll('.dot').forEach(e => e.classList.remove('active'));
-    const activeIndicator = imgs.length - 1 - (scrollTarget + changeTarget);
+    const activeIndicator = imgs.length - 1 - (selectedPolo + changeTarget);
     document.querySelectorAll('.dot')[activeIndicator].classList.add('active');
 }
 
@@ -257,10 +257,10 @@ function getColorElem (colorIndex) {
     return document.querySelector(`.color-${colorIndex}`);
 }
 
-function toggle (e) { // Todo mi ez?
+function toggleColorPicker (e) {
     e.preventDefault();
     const bubble = document.querySelector('.bubble');
-    bubble.style.opacity = bubble.style.opacity === '0' ? '0.98' : '0';
+    bubble.classList.toggle('opened');
 }
 
 function colorClickHandler (e, colorIndex) {
@@ -272,12 +272,12 @@ function colorClickHandler (e, colorIndex) {
 }
 
 function getCurrentColorSheme () {
-    return colorSchemes[imgColorScheme[scrollTarget]];
+    return colorSchemes[imgColorScheme[selectedPolo]];
 }
 
 function updateUri () {
     const newUri = `?color=${selectedColor.substring(1, 7)}&font=${encodeURIComponent(selectedFont)}` +
-        `&bg=${imgs.length - 1 - scrollTarget}&txt=${encodeURIComponent(poloText.value)}`;
+        `&bg=${imgs.length - 1 - selectedPolo}&txt=${encodeURIComponent(poloText.value)}`;
     history.replaceState('state', 'Index', newUri);
 }
 
@@ -286,10 +286,10 @@ function drawPolo (textChanged = false) {
     context.globalAlpha = 1;
 
     if (scroll) {
-        const dx = scrollTarget * canvas.width - canvasOffset;
+        const dx = selectedPolo * canvas.width - canvasOffset;
         canvasOffset += dx * 0.1;
         if (Math.abs(canvasOffset % canvas.width) <= 5 || Math.abs(canvasOffset % canvas.width) >= canvas.width - 5) {
-            canvasOffset = scrollTarget * canvas.width;
+            canvasOffset = selectedPolo * canvas.width;
             scroll = false;
         }
 
